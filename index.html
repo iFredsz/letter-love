@@ -315,14 +315,34 @@
         audio.addEventListener('timeupdate', updateSubtitle);
         setInterval(updateSubtitle, 100); // Pemeriksaan setiap 100ms untuk presisi maksimal
 
+        function playMusic() {
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    console.log("Audio playing successfully");
+                }).catch(function(err) {
+                    console.log("Audio play error:", err);
+                    // Fallback otomatis: putar musik seketika saat user menyentuh layar
+                    var unlockAudio = function() {
+                        audio.play().then(function() {
+                            document.removeEventListener('click', unlockAudio);
+                            document.removeEventListener('touchstart', unlockAudio);
+                            document.removeEventListener('pointerdown', unlockAudio);
+                        }).catch(function() {});
+                    };
+                    document.addEventListener('click', unlockAudio, { once: true });
+                    document.addEventListener('touchstart', unlockAudio, { once: true });
+                    document.addEventListener('pointerdown', unlockAudio, { once: true });
+                });
+            }
+        }
+
         function startExperience() {
+            // 1. Putar musik langsung dalam konteks user gesture
+            playMusic();
+
             if (isStarted) return;
             isStarted = true;
-
-            // 1. Putar lagu Beautiful in White seketika
-            audio.play().catch(function(err) {
-                console.log("Audio play error:", err);
-            });
 
             // 2. Hilangkan layar pembuka dengan transisi mulus
             welcomeOverlay.classList.add('hidden');
@@ -336,9 +356,16 @@
             }
         }
 
-        // Trigger saat tombol ditekan
-        openBtn.addEventListener('click', startExperience);
-        openBtn.addEventListener('touchstart', startExperience, { passive: true });
+        // Trigger saat tombol atau overlay disentuh
+        openBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            startExperience();
+        });
+        openBtn.addEventListener('pointerdown', function(e) {
+            e.stopPropagation();
+            startExperience();
+        });
+        welcomeOverlay.addEventListener('click', startExperience);
     </script>
 </body>
 

@@ -488,7 +488,7 @@ S.Dot.prototype = {
 S.ShapeBuilder = (function () {
   var gap = window.innerWidth < 600 ? 5 : (window.innerWidth < 900 ? 8 : 11),
     shapeCanvas = document.createElement('canvas'),
-    shapeContext = shapeCanvas.getContext('2d'),
+    shapeContext = shapeCanvas.getContext('2d', { willReadFrequently: true }),
     fontSize = 500,
     fontFamily = '"Plus Jakarta Sans", "Poppins", "Montserrat", "Arial Black", sans-serif';
 
