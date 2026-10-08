@@ -373,18 +373,12 @@ S.Color.prototype = {
 };
 
 
-function getDotSize() {
-  var w = window.innerWidth;
-  if (w < 480) return 3.0;
-  if (w < 768) return 3.6;
-  return 4.5;
-}
-
 S.Dot = function (x, y) {
+  var isMobile = window.innerWidth < 600;
   this.p = new S.Point({
     x: x,
     y: y,
-    z: getDotSize(),
+    z: isMobile ? 2.5 : 5,
     a: 1,
     h: 0
   });
@@ -492,21 +486,14 @@ S.Dot.prototype = {
 
 
 S.ShapeBuilder = (function () {
-  var gap = 13,
+  var gap = window.innerWidth < 600 ? 7 : (window.innerWidth < 900 ? 10 : 13),
     shapeCanvas = document.createElement('canvas'),
     shapeContext = shapeCanvas.getContext('2d'),
     fontSize = 500,
-    fontFamily = "'Plus Jakarta Sans', 'Poppins', 'Segoe UI', Arial, sans-serif";
-
-  function calculateGap() {
-    var w = window.innerWidth;
-    if (w < 480) return 10;
-    if (w < 768) return 11;
-    return 13;
-  }
+    fontFamily = '"Plus Jakarta Sans", "Poppins", "Montserrat", "Arial Black", sans-serif';
 
   function fit() {
-    gap = calculateGap();
+    gap = window.innerWidth < 600 ? 7 : (window.innerWidth < 900 ? 10 : 13);
     shapeCanvas.width = Math.floor(window.innerWidth / gap) * gap;
     shapeCanvas.height = Math.floor(window.innerHeight / gap) * gap;
     shapeContext.fillStyle = 'red';
@@ -516,7 +503,8 @@ S.ShapeBuilder = (function () {
 
   function processCanvas() {
     var pixels = shapeContext.getImageData(0, 0, shapeCanvas.width, shapeCanvas.height).data;
-    var dots = [],
+    dots = [],
+      pixels,
       x = 0,
       y = 0,
       fx = shapeCanvas.width,
@@ -550,7 +538,7 @@ S.ShapeBuilder = (function () {
   }
 
   function setFontSize(s) {
-    shapeContext.font = '900 ' + Math.round(s) + 'px ' + fontFamily;
+    shapeContext.font = '900 ' + s + 'px ' + fontFamily;
   }
 
   function isNumber(n) {
@@ -584,7 +572,6 @@ S.ShapeBuilder = (function () {
     },
 
     circle: function (d) {
-      fit();
       var r = Math.max(0, d) / 2;
       shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
       shapeContext.beginPath();
@@ -596,28 +583,17 @@ S.ShapeBuilder = (function () {
     },
 
     letter: function (l) {
-      fit();
       var s = 0;
-      var textStr = String(l);
+      var isMobile = window.innerWidth < 600;
 
       setFontSize(fontSize);
-      var measuredWidth = shapeContext.measureText(textStr).width || 1;
-
-      // Berikan padding horizontal aman agar teks panjang seperti Tresnoku & Saklawase tidak terpotong
-      var maxAvailableWidth = shapeCanvas.width * (window.innerWidth < 600 ? 0.94 : 0.84);
-      var maxAvailableHeight = shapeCanvas.height * (isNumber(l) ? 0.70 : (window.innerWidth < 600 ? 0.35 : 0.45));
-
-      s = Math.min(
-        fontSize,
-        (maxAvailableWidth / measuredWidth) * fontSize,
-        (maxAvailableHeight / fontSize) * fontSize
-      );
-
-      s = Math.max(s, 24);
+      s = Math.min(fontSize,
+        (shapeCanvas.width / shapeContext.measureText(l).width) * (isMobile ? 0.90 : 0.8) * fontSize,
+        (shapeCanvas.height / fontSize) * (isNumber(l) ? 1 : (isMobile ? 0.38 : 0.45)) * fontSize);
       setFontSize(s);
 
       shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
-      shapeContext.fillText(textStr, shapeCanvas.width / 2, shapeCanvas.height / 2);
+      shapeContext.fillText(l, shapeCanvas.width / 2, shapeCanvas.height / 2);
 
       return processCanvas();
     },
@@ -915,15 +891,16 @@ S.Shape = (function () {
         i = Math.floor(Math.random() * n.dots.length);
         dots[d].e = fast ? 0.25 : (dots[d].s ? 0.14 : 0.11);
 
+        var isMobile = window.innerWidth < 600;
         if (dots[d].s) {
           dots[d].move(new S.Point({
-            z: Math.random() * 5 + 3,
+            z: Math.random() * (isMobile ? 10 : 20) + (isMobile ? 4 : 10),
             a: Math.random(),
             h: 18
           }));
         } else {
           dots[d].move(new S.Point({
-            z: Math.random() * 3 + 2,
+            z: Math.random() * (isMobile ? 3 : 5) + (isMobile ? 2 : 5),
             h: fast ? 18 : 30
           }));
         }
@@ -933,7 +910,7 @@ S.Shape = (function () {
           x: n.dots[i].x + cx,
           y: n.dots[i].y + cy,
           a: 1,
-          z: getDotSize(),
+          z: isMobile ? 2.5 : 5,
           h: 0
         }));
 
@@ -944,7 +921,7 @@ S.Shape = (function () {
       for (var i = d; i < dots.length; i++) {
         if (dots[i].s) {
           dots[i].move(new S.Point({
-            z: Math.random() * 5 + 3,
+            z: Math.random() * (isMobile ? 10 : 20) + (isMobile ? 4 : 10),
             a: Math.random(),
             h: 20
           }));
@@ -955,7 +932,7 @@ S.Shape = (function () {
             x: Math.random() * a.w,
             y: Math.random() * a.h,
             a: 0.3, //.4
-            z: Math.random() * 2.5 + 1,
+            z: Math.random() * (isMobile ? 2 : 4),
             h: 0
           }));
         }
