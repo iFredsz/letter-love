@@ -316,33 +316,29 @@
         setInterval(updateSubtitle, 100); // Pemeriksaan setiap 100ms untuk presisi maksimal
 
         function playMusic() {
+            if (!audio || !audio.paused) return;
             var playPromise = audio.play();
             if (playPromise !== undefined) {
-                playPromise.then(function() {
-                    console.log("Audio playing successfully");
-                }).catch(function(err) {
-                    console.log("Audio play error:", err);
-                    // Fallback otomatis: putar musik seketika saat user menyentuh layar
+                playPromise.catch(function(err) {
+                    // Jika browser sempat menahan sesaat karena kebijakan autoplay,
+                    // jalankan pemutaran secara otomatis saat interaksi sentuh pertama
                     var unlockAudio = function() {
-                        audio.play().then(function() {
-                            document.removeEventListener('click', unlockAudio);
-                            document.removeEventListener('touchstart', unlockAudio);
-                            document.removeEventListener('pointerdown', unlockAudio);
-                        }).catch(function() {});
+                        if (audio && audio.paused) {
+                            audio.play().catch(function() {});
+                        }
                     };
-                    document.addEventListener('click', unlockAudio, { once: true });
-                    document.addEventListener('touchstart', unlockAudio, { once: true });
-                    document.addEventListener('pointerdown', unlockAudio, { once: true });
+                    window.addEventListener('click', unlockAudio, { once: true });
+                    window.addEventListener('touchend', unlockAudio, { once: true });
                 });
             }
         }
 
         function startExperience() {
-            // 1. Putar musik langsung dalam konteks user gesture
-            playMusic();
-
             if (isStarted) return;
             isStarted = true;
+
+            // 1. Putar musik seketika saat tombol ditekan
+            playMusic();
 
             // 2. Hilangkan layar pembuka dengan transisi mulus
             welcomeOverlay.classList.add('hidden');
@@ -350,22 +346,20 @@
                 welcomeOverlay.style.display = 'none';
             }, 800);
 
-            // 3. Jalankan animasi 3..2..1 tepat saat musik mulai berputar
+            // 3. Jalankan animasi tepat saat musik mulai berputar
             if (window.startLoveApp) {
                 window.startLoveApp();
             }
         }
 
-        // Trigger saat tombol atau overlay disentuh
+        // Trigger saat tombol atau overlay diklik
         openBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             startExperience();
         });
-        openBtn.addEventListener('pointerdown', function(e) {
-            e.stopPropagation();
+        welcomeOverlay.addEventListener('click', function() {
             startExperience();
         });
-        welcomeOverlay.addEventListener('click', startExperience);
     </script>
 </body>
 
