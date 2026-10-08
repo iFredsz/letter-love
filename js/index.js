@@ -375,9 +375,9 @@ S.Color.prototype = {
 
 function getDotSize() {
   var w = window.innerWidth;
-  if (w < 420) return 2.6;
-  if (w < 768) return 3.4;
-  return 5;
+  if (w < 480) return 3.0;
+  if (w < 768) return 3.6;
+  return 4.5;
 }
 
 S.Dot = function (x, y) {
@@ -500,9 +500,8 @@ S.ShapeBuilder = (function () {
 
   function calculateGap() {
     var w = window.innerWidth;
-    if (w < 400) return 5;
-    if (w < 600) return 6;
-    if (w < 900) return 9;
+    if (w < 480) return 10;
+    if (w < 768) return 11;
     return 13;
   }
 
@@ -918,13 +917,13 @@ S.Shape = (function () {
 
         if (dots[d].s) {
           dots[d].move(new S.Point({
-            z: Math.random() * 20 + 10,
+            z: Math.random() * 5 + 3,
             a: Math.random(),
             h: 18
           }));
         } else {
           dots[d].move(new S.Point({
-            z: Math.random() * 5 + 5,
+            z: Math.random() * 3 + 2,
             h: fast ? 18 : 30
           }));
         }
@@ -945,7 +944,7 @@ S.Shape = (function () {
       for (var i = d; i < dots.length; i++) {
         if (dots[i].s) {
           dots[i].move(new S.Point({
-            z: Math.random() * 20 + 10,
+            z: Math.random() * 5 + 3,
             a: Math.random(),
             h: 20
           }));
@@ -956,7 +955,7 @@ S.Shape = (function () {
             x: Math.random() * a.w,
             y: Math.random() * a.h,
             a: 0.3, //.4
-            z: Math.random() * 4,
+            z: Math.random() * 2.5 + 1,
             h: 0
           }));
         }
