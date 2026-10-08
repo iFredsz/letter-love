@@ -1,0 +1,350 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Ferdy ❤️ Niki</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/sun0225SUN/photos/img/20210715233345.png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0px;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            touch-action: manipulation;
+        }
+
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .namebox {
+            color: #ff5ba5;
+            position: absolute;
+            z-index: 9999;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            transition: 1s;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .namebox h1 {
+            margin: 0 auto;
+            font-size: clamp(1.6rem, 6vw, 2.4rem);
+            line-height: 1.3;
+            text-shadow: 0 0 10px rgba(255, 91, 165, 0.7);
+        }
+
+        /* Romantic Welcome Start Screen */
+        #welcomeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #260a1e 0%, #050105 100%);
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            padding: 20px;
+        }
+
+        #welcomeOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .welcome-box {
+            background: rgba(255, 91, 165, 0.08);
+            border: 1px solid rgba(255, 91, 165, 0.35);
+            border-radius: 24px;
+            padding: 40px 30px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 0 40px rgba(255, 91, 165, 0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 55px;
+            animation: pulseHeart 1.4s infinite ease-in-out;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 15px #ff5ba5);
+        }
+
+        .welcome-title {
+            color: #ffffff;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 24px;
+            margin-bottom: 22px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 91, 165, 0.5);
+        }
+
+        .welcome-btn {
+            background: linear-gradient(135deg, #ff5ba5 0%, #ff2d87 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 13px 28px;
+            font-size: 15px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 91, 165, 0.6);
+            transition: all 0.3s ease;
+            outline: none;
+            user-select: none;
+        }
+
+        .welcome-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 30px rgba(255, 91, 165, 0.9);
+        }
+
+        .welcome-btn:active {
+            transform: scale(0.96);
+        }
+
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.22); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.22); }
+            70% { transform: scale(1); }
+        }
+        /* Subtitle Lyrics Box */
+        #lyricsContainer {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            pointer-events: none;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            background: rgba(12, 3, 10, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 91, 165, 0.3);
+            border-radius: 22px;
+            padding: 12px 22px;
+            box-shadow: 0 0 25px rgba(255, 91, 165, 0.25);
+            opacity: 0;
+        }
+
+        #lyricsContainer.active {
+            opacity: 1;
+        }
+
+        .lyric-en {
+            color: rgba(255, 255, 255, 0.65);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 12.5px;
+            font-style: italic;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .lyric-id {
+            color: #ff8ec2;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+            text-shadow: 0 0 12px rgba(255, 91, 165, 0.8);
+            line-height: 1.4;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Welcome Overlay: Klik untuk membuka pesan & memutar musik -->
+    <div id="welcomeOverlay">
+        <div class="welcome-box">
+            <div class="welcome-icon">💌</div>
+            <div class="welcome-title">Dear Niki 💖</div>
+            <button id="openBtn" class="welcome-btn">✨ Buka ✨</button>
+        </div>
+    </div>
+
+    <canvas id="canvas-matrix" style="position:absolute;width:100%;height:100%;z-index:8888"></canvas>
+    <!-- <canvas id="canvas" style="position:absolute;width:100%;height:100%;z-index:8888"></canvas> -->
+    <canvas style="position:absolute;width:100%;height:100%;z-index:9999" class="canvas"></canvas>
+    <div class="overlay">
+        <div class="tabs">
+            <div class="tabs-labels"><span class="tabs-label">Commands</span><span class="tabs-label">Info</span><span
+                    class="tabs-label">Share</span></div>
+
+            <div class="tabs-panels">
+                <ul class="tabs-panel commands">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <canvas id="pinkboard" style="position:absolute;width:100%;height:100%;z-index:8888"></canvas>
+
+    <!-- Subtitle Lyrics Bar -->
+    <div id="lyricsContainer">
+        <div id="lyricEn" class="lyric-en"></div>
+        <div id="lyricId" class="lyric-id"></div>
+    </div>
+
+    <script src="js/index.js"></script>
+    <script src="js/heart.js"></script>
+    <script src="js/matrix.js"></script>
+    <div class="namebox" style="opacity: 0;">
+        <h1 style="font-family: 'Comic Sans MS', cursive, sans-serif;">
+            Ferdy &#10084;&#65039; Niki<br>
+            <span style="display: block; font-size: 0.75em; letter-spacing: 3px; margin-top: 6px; opacity: 0.95;">Saklawase</span>
+        </h1>
+    </div>
+
+    <!-- HTML5 Audio Player (100% Kompatibel dengan Vercel & Localhost) -->
+    <audio id="bgMusic" src="music.mp3" loop preload="auto" playsinline>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        var audio = document.getElementById('bgMusic');
+        var openBtn = document.getElementById('openBtn');
+        var welcomeOverlay = document.getElementById('welcomeOverlay');
+        var lyricsBox = document.getElementById('lyricsContainer');
+        var lyricEnEl = document.getElementById('lyricEn');
+        var lyricIdEl = document.getElementById('lyricId');
+        var isStarted = false;
+
+        audio.volume = 0.9;
+
+        // Daftar Subtitle Lirik Sinkron Otomatis (Hanya Lirik Vokal Asli)
+        var lyricsData = [
+            { time: 13.7, en: "Not sure if you know this...", id: "Mungkin kau belum menyadarinya..." },
+            { time: 17.1, en: "But when we first met...", id: "Namun saat pertama kali kita bertemu..." },
+            { time: 20.2, en: "I got so nervous I couldn't speak", id: "Aku begitu gugup & terpana hingga tak mampu berkata-kata..." },
+            { time: 26.2, en: "In that very moment, I found the one", id: "Di detik itulah aku tahu, aku telah menemukan belahan jiwaku..." },
+            { time: 32.8, en: "And my life had found its missing piece", id: "Dan hidupku telah menemukan kepingan yang melengkapinya..." },
+            { time: 39.8, en: "So as long as I live I'll love you", id: "Maka seumur hidupku, aku akan selalu mencintaimu..." },
+            { time: 43.9, en: "Will have and hold you", id: "Akan selalu menjaga dan mendekapmu erat..." },
+            { time: 47.0, en: "You look so beautiful in white", id: "Kau begitu anggun, cantik, dan sempurna..." },
+            { time: 52.3, en: "And from now to my very last breath", id: "Dan dari sekarang hingga hembusan nafasku yang terakhir..." },
+            { time: 56.5, en: "This day I'll cherish", id: "Hari ini dan cintamu akan selalu kujaga selamanya..." },
+            { time: 59.7, en: "You look so beautiful in white tonight", id: "Kau bidadari terindah dalam hidupku malam ini..." },
+            { time: 72.1, en: "What we have is timeless", id: "Cinta kita abadi tak lekang oleh waktu..." },
+            { time: 75.4, en: "My love is endless", id: "Kasih sayangku takkan pernah ada habisnya..." },
+            { time: 78.5, en: "And with this ring I say to the world", id: "Dan dengan segenap ketulusan, kuucapkan pada semesta..." },
+            { time: 84.6, en: "You're my every reason", id: "Kaulah alasanku bahagia..." },
+            { time: 87.8, en: "You're all that I believe in", id: "Kaulah segalanya yang kupercaya..." },
+            { time: 91.3, en: "With all my heart I mean every word", id: "Dari lubuk hatiku yang terdalam, kuucap janji setia ini..." },
+            { time: 98.0, en: "So as long as I live I'll love you", id: "Maka seumur hidupku, aku akan selalu mencintaimu..." },
+            { time: 102.2, en: "Will have and hold you", id: "Akan terus mendampingi dan melindungimu..." },
+            { time: 105.4, en: "You look so beautiful in white", id: "Kau begitu anggun dan mempesona..." },
+            { time: 110.6, en: "And from now to my very last breath", id: "Dan dari sekarang hingga hembusan nafasku yang terakhir..." },
+            { time: 114.9, en: "This day I'll cherish", id: "Cinta ini akan selalu kusyukuri selamanya..." },
+            { time: 118.1, en: "You look so beautiful in white tonight", id: "Kau begitu cantik dan memukau malam ini..." },
+            { time: 130.9, en: "You look so beautiful in white, yeah", id: "Kau bidadari terindah dalam hidupku..." },
+            { time: 144.2, en: "So beautiful in white tonight", id: "Begitu sempurna... cintaku..." },
+            { time: 152.1, en: "And if our daughter's what our future holds", id: "Dan jika kelak kita dikaruniai seorang putri..." },
+            { time: 155.9, en: "I hope she has your eyes", id: "Kuharap ia memiliki mata indah sepertimu..." },
+            { time: 159.1, en: "Finds love like you and I did, yeah", id: "Menemukan cinta sejati seperti cinta kita berdua..." },
+            { time: 164.5, en: "And if she falls in love we'll let her go", id: "Dan kelak saat ia dewasa dan menemukan cintanya..." },
+            { time: 168.6, en: "I'll walk her down the aisle", id: "Ku antar dia menuju pelaminan..." },
+            { time: 171.8, en: "She'll look so beautiful in white", id: "Ia akan secantik dirimu yang anggun..." },
+            { time: 181.3, en: "You look so beautiful in white", id: "Kau bidadari terindahku..." },
+            { time: 186.5, en: "So as long as I live I'll love you", id: "Maka seumur hidupku, aku akan selalu mencintaimu..." },
+            { time: 190.7, en: "Will have and hold you", id: "Akan terus mendekap dan menyayangimu..." },
+            { time: 193.8, en: "You look so beautiful in white", id: "Kau begitu anggun dan sempurna..." },
+            { time: 199.3, en: "And from now to my very last breath", id: "Dan dari sekarang hingga nafas terakhirku..." },
+            { time: 203.5, en: "This day I'll cherish", id: "Cinta ini akan selalu kujaga selamanya..." },
+            { time: 206.7, en: "You look so beautiful in white tonight", id: "Kau bidadari terindahku malam ini..." },
+            { time: 215.0, en: "Ferdy ❤️ Niki Saklawase ✨", id: "Cinta Kita Abadi Selamanya ❤️" }
+        ];
+
+        var lastIndex = -1;
+        var LYRIC_OFFSET = 0.85; // Memajukan subtitle ~0.85 detik agar teks muncul tepat saat vokal mulai berbunyi
+
+        // Update Subtitle Sinkron Presisi Tinggi
+        function updateSubtitle() {
+            if (!audio || audio.paused) return;
+            var currTime = audio.currentTime + LYRIC_OFFSET;
+            var activeIdx = -1;
+
+            for (var i = lyricsData.length - 1; i >= 0; i--) {
+                if (currTime >= lyricsData[i].time) {
+                    activeIdx = i;
+                    break;
+                }
+            }
+
+            if (activeIdx === -1) {
+                lyricsBox.classList.remove('active');
+            } else if (activeIdx !== lastIndex) {
+                lastIndex = activeIdx;
+                lyricEnEl.textContent = lyricsData[activeIdx].en;
+                lyricIdEl.textContent = lyricsData[activeIdx].id;
+                lyricsBox.classList.add('active');
+            }
+        }
+
+        audio.addEventListener('timeupdate', updateSubtitle);
+        setInterval(updateSubtitle, 100); // Pemeriksaan setiap 100ms untuk presisi maksimal
+
+        function startExperience() {
+            if (isStarted) return;
+            isStarted = true;
+
+            // 1. Putar lagu Beautiful in White seketika
+            audio.play().catch(function(err) {
+                console.log("Audio play error:", err);
+            });
+
+            // 2. Hilangkan layar pembuka dengan transisi mulus
+            welcomeOverlay.classList.add('hidden');
+            setTimeout(function() {
+                welcomeOverlay.style.display = 'none';
+            }, 800);
+
+            // 3. Jalankan animasi 3..2..1 tepat saat musik mulai berputar
+            if (window.startLoveApp) {
+                window.startLoveApp();
+            }
+        }
+
+        // Trigger saat tombol ditekan
+        openBtn.addEventListener('click', startExperience);
+        openBtn.addEventListener('touchstart', startExperience, { passive: true });
+    </script>
+</body>
+
+</html>
