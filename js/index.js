@@ -373,11 +373,18 @@ S.Color.prototype = {
 };
 
 
+function getDotSize() {
+  var w = window.innerWidth;
+  if (w < 420) return 2.6;
+  if (w < 768) return 3.4;
+  return 5;
+}
+
 S.Dot = function (x, y) {
   this.p = new S.Point({
     x: x,
     y: y,
-    z: 5,
+    z: getDotSize(),
     a: 1,
     h: 0
   });
@@ -489,9 +496,18 @@ S.ShapeBuilder = (function () {
     shapeCanvas = document.createElement('canvas'),
     shapeContext = shapeCanvas.getContext('2d'),
     fontSize = 500,
-    fontFamily = 'Avenir, Helvetica Neue, Helvetica, Arial, sans-serif';
+    fontFamily = "'Plus Jakarta Sans', 'Poppins', 'Segoe UI', Arial, sans-serif";
+
+  function calculateGap() {
+    var w = window.innerWidth;
+    if (w < 400) return 5;
+    if (w < 600) return 6;
+    if (w < 900) return 9;
+    return 13;
+  }
 
   function fit() {
+    gap = calculateGap();
     shapeCanvas.width = Math.floor(window.innerWidth / gap) * gap;
     shapeCanvas.height = Math.floor(window.innerHeight / gap) * gap;
     shapeContext.fillStyle = 'red';
@@ -501,8 +517,7 @@ S.ShapeBuilder = (function () {
 
   function processCanvas() {
     var pixels = shapeContext.getImageData(0, 0, shapeCanvas.width, shapeCanvas.height).data;
-    dots = [],
-      pixels,
+    var dots = [],
       x = 0,
       y = 0,
       fx = shapeCanvas.width,
@@ -536,7 +551,7 @@ S.ShapeBuilder = (function () {
   }
 
   function setFontSize(s) {
-    shapeContext.font = 'bold ' + s + 'px ' + fontFamily;
+    shapeContext.font = '900 ' + Math.round(s) + 'px ' + fontFamily;
   }
 
   function isNumber(n) {
@@ -570,6 +585,7 @@ S.ShapeBuilder = (function () {
     },
 
     circle: function (d) {
+      fit();
       var r = Math.max(0, d) / 2;
       shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
       shapeContext.beginPath();
@@ -581,16 +597,28 @@ S.ShapeBuilder = (function () {
     },
 
     letter: function (l) {
+      fit();
       var s = 0;
+      var textStr = String(l);
 
       setFontSize(fontSize);
-      s = Math.min(fontSize,
-        (shapeCanvas.width / shapeContext.measureText(l).width) * 0.8 * fontSize,
-        (shapeCanvas.height / fontSize) * (isNumber(l) ? 1 : 0.45) * fontSize);
+      var measuredWidth = shapeContext.measureText(textStr).width || 1;
+
+      // Berikan padding horizontal aman agar teks panjang seperti Tresnoku & Saklawase tidak terpotong
+      var maxAvailableWidth = shapeCanvas.width * (window.innerWidth < 600 ? 0.94 : 0.84);
+      var maxAvailableHeight = shapeCanvas.height * (isNumber(l) ? 0.70 : (window.innerWidth < 600 ? 0.35 : 0.45));
+
+      s = Math.min(
+        fontSize,
+        (maxAvailableWidth / measuredWidth) * fontSize,
+        (maxAvailableHeight / fontSize) * fontSize
+      );
+
+      s = Math.max(s, 24);
       setFontSize(s);
 
       shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
-      shapeContext.fillText(l, shapeCanvas.width / 2, shapeCanvas.height / 2);
+      shapeContext.fillText(textStr, shapeCanvas.width / 2, shapeCanvas.height / 2);
 
       return processCanvas();
     },
@@ -906,7 +934,7 @@ S.Shape = (function () {
           x: n.dots[i].x + cx,
           y: n.dots[i].y + cy,
           a: 1,
-          z: 5,
+          z: getDotSize(),
           h: 0
         }));
 
