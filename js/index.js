@@ -23,7 +23,7 @@ var S = {
     if (i !== -1) {
       S.UI.simulate(decodeURI(action).substring(i + 3));
     } else {
-      S.UI.simulate("|#countdown 3||Koe|Tresnoku|Saklawase||#rectangle|");
+      S.UI.simulate("|#countdown 3||Kamu|Cintaku|Selamanya||#rectangle|");
     }
 
     // Add a flag to track animation completion
