@@ -378,7 +378,7 @@ S.Dot = function (x, y) {
   this.p = new S.Point({
     x: x,
     y: y,
-    z: isMobile ? 2.5 : 5,
+    z: isMobile ? 1.7 : 3.2,
     a: 1,
     h: 0
   });
@@ -486,14 +486,14 @@ S.Dot.prototype = {
 
 
 S.ShapeBuilder = (function () {
-  var gap = window.innerWidth < 600 ? 7 : (window.innerWidth < 900 ? 10 : 13),
+  var gap = window.innerWidth < 600 ? 5 : (window.innerWidth < 900 ? 8 : 11),
     shapeCanvas = document.createElement('canvas'),
     shapeContext = shapeCanvas.getContext('2d'),
     fontSize = 500,
     fontFamily = '"Plus Jakarta Sans", "Poppins", "Montserrat", "Arial Black", sans-serif';
 
   function fit() {
-    gap = window.innerWidth < 600 ? 7 : (window.innerWidth < 900 ? 10 : 13);
+    gap = window.innerWidth < 600 ? 5 : (window.innerWidth < 900 ? 8 : 11);
     shapeCanvas.width = Math.floor(window.innerWidth / gap) * gap;
     shapeCanvas.height = Math.floor(window.innerHeight / gap) * gap;
     shapeContext.fillStyle = 'red';
@@ -588,8 +588,8 @@ S.ShapeBuilder = (function () {
 
       setFontSize(fontSize);
       s = Math.min(fontSize,
-        (shapeCanvas.width / shapeContext.measureText(l).width) * (isMobile ? 0.90 : 0.8) * fontSize,
-        (shapeCanvas.height / fontSize) * (isNumber(l) ? 1 : (isMobile ? 0.38 : 0.45)) * fontSize);
+        (shapeCanvas.width / shapeContext.measureText(l).width) * (isMobile ? 0.94 : 0.82) * fontSize,
+        (shapeCanvas.height / fontSize) * (isNumber(l) ? 1 : (isMobile ? 0.36 : 0.45)) * fontSize);
       setFontSize(s);
 
       shapeContext.clearRect(0, 0, shapeCanvas.width, shapeCanvas.height);
@@ -894,13 +894,13 @@ S.Shape = (function () {
         var isMobile = window.innerWidth < 600;
         if (dots[d].s) {
           dots[d].move(new S.Point({
-            z: Math.random() * (isMobile ? 10 : 20) + (isMobile ? 4 : 10),
+            z: Math.random() * (isMobile ? 6 : 14) + (isMobile ? 2 : 5),
             a: Math.random(),
             h: 18
           }));
         } else {
           dots[d].move(new S.Point({
-            z: Math.random() * (isMobile ? 3 : 5) + (isMobile ? 2 : 5),
+            z: Math.random() * (isMobile ? 2.5 : 4) + (isMobile ? 1.5 : 3),
             h: fast ? 18 : 30
           }));
         }
@@ -910,7 +910,7 @@ S.Shape = (function () {
           x: n.dots[i].x + cx,
           y: n.dots[i].y + cy,
           a: 1,
-          z: isMobile ? 2.5 : 5,
+          z: isMobile ? 1.7 : 3.2,
           h: 0
         }));
 
@@ -921,7 +921,7 @@ S.Shape = (function () {
       for (var i = d; i < dots.length; i++) {
         if (dots[i].s) {
           dots[i].move(new S.Point({
-            z: Math.random() * (isMobile ? 10 : 20) + (isMobile ? 4 : 10),
+            z: Math.random() * (isMobile ? 6 : 14) + (isMobile ? 2 : 5),
             a: Math.random(),
             h: 20
           }));
@@ -932,7 +932,7 @@ S.Shape = (function () {
             x: Math.random() * a.w,
             y: Math.random() * a.h,
             a: 0.3, //.4
-            z: Math.random() * (isMobile ? 2 : 4),
+            z: Math.random() * (isMobile ? 1.5 : 3),
             h: 0
           }));
         }
